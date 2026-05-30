@@ -1,7 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "https://construction-erp-backend.onrender.com/api/$1" },
-    { "source": "/uploads/(.*)", "destination": "https://construction-erp-backend.onrender.com/uploads/$1" },
+    { "source": "/api/(.*)", "destination": "https://construction-erp-ib3u.onrender.com/api/$1" },
+    { "source": "/uploads/(.*)", "destination": "https://construction-erp-ib3u.onrender.com/uploads/$1" },
     { "source": "/((?!assets/).*)", "destination": "/index.html" }
   ],
   "headers": [
