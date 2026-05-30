@@ -3,12 +3,16 @@
 ## نظرة عامة
 منصة ERP متعددة المستأجرين (Multi-Tenant) لإدارة شركات المقاولات.
 
+**Live:** https://construction-erp-six.vercel.app
+**Backend:** https://construction-erp-ib3u.onrender.com
+
 ## التقنيات المستخدمة
-- **Frontend**: React 18 + Vite + Tailwind CSS + React Router + Axios + zustand + recharts + react-calendar + react-toastify + lucide-react + i18next
+- **Frontend**: React 18 + Vite + Tailwind CSS + React Router + Axios + recharts + react-toastify + lucide-react + i18next
 - **Backend**: Node.js + Express.js
 - **Database**: nedb-promises (تخزين ملفي محلي، لا يحتاج MongoDB)
 - **Auth**: JWT + bcryptjs
 - **Language**: Arabic (RTL) + English (LTR) - دعم كامل للغتين
+- **Deploy**: Vercel (Frontend) + Render (Backend)
 
 ## هيكل المشروع
 ```
@@ -16,208 +20,278 @@ construction-erp/
 ├── backend/
 │   ├── server.js
 │   ├── .env
+│   ├── render.yaml              # Render deploy config
 │   ├── package.json
-│   ├── data/                      # ملفات nedb (تتولد تلقائياً)
-│   ├── uploads/                   # الملفات المرفوعة
+│   ├── data/                    # ملفات nedb (تتولد تلقائياً)
+│   ├── uploads/                 # الملفات المرفوعة
 │   ├── src/
-│   │   ├── models/                # Company, User, Project, ContactMessage, إلخ
-│   │   ├── controllers/           # auth, public, company, attendance, project, accounting, inventory, portfolio
-│   │   ├── routes/                # auth, public, company, attendance, project, accounting, inventory, portfolio, announcement
-│   │   ├── middleware/            # auth (JWT + RBAC), validate (Joi), upload (Multer)
+│   │   ├── models/              # جميع الموديلات
+│   │   ├── controllers/         # جميع Controllers
+│   │   ├── routes/              # جميع Routes
+│   │   ├── middleware/          # auth (JWT + RBAC), validate (Joi), upload (Multer)
 │   │   └── utils/
-│   │       ├── db.js              # nedb wrapper (يقلد Mongoose API)
-│   │       └── seed.js            # بيانات تجريبية
+│   │       ├── db.js            # nedb wrapper (يقلد Mongoose API)
+│   │       └── seed.js          # بيانات تجريبية
 ├── frontend/
 │   ├── index.html
-│   ├── public/images/             # الصور الثابتة (خلفيات، صور المطور)
-│   ├── vite.config.js            # port 8080, proxy → localhost:5000
+│   ├── vercel.json              # Vercel deploy config + API proxy
+│   ├── public/images/           # الصور الثابتة
+│   ├── vite.config.js           # port 8080, proxy → localhost:5000
 │   ├── tailwind.config.js
 │   └── src/
 │       ├── main.jsx
-│       ├── App.jsx                # Routes + AuthProvider
-│       ├── index.css              # RTL + Custom classes
-│       ├── i18n/                  # ar.json + en.json
-│       ├── contexts/              # AuthContext (login, logout, permissions)
-│       ├── services/              # api.js (axios + all endpoints)
-│       ├── components/            # Layout (sidebar), SuperAdminLayout
-│       └── pages/                 # Landing, Login, Dashboard, Employees, إلخ
+│       ├── App.jsx              # Routes + AuthProvider
+│       ├── index.css            # RTL + Custom classes
+│       ├── i18n/                # ar.json + en.json
+│       ├── contexts/            # AuthContext
+│       ├── services/            # api.js (axios + all endpoints)
+│       ├── components/          # Layout, SuperAdminLayout, ImageSlider
+│       └── pages/               # جميع الصفحات
 ```
 
 ## Database (nedb-promises)
 بديل لـ MongoDB للتطوير المحلي. كل "موديل" هو ملف `.db` في `backend/data/`.
 
-### الموديلات
+### الموديلات الأساسية
 - `Company` - الشركات المسجلة
 - `PlatformAdmin` - مشرفي المنصة
 - `PlatformAd` - إعلانات المنصة
 - `User` - موظفو الشركة (roles: owner, manager, accountant, hr, inventory, engineer, employee)
 - `Attendance` - سجل الحضور والغياب
-- `Account` - دليل الحسابات
-- `JournalEntry` - القيود اليومية
+- `Project` - المشاريع (ورشات، آليات، مهندسين، مصروفات، مواد)
+- `PortfolioWork` - الأعمال المنفذة
+- `Announcement` - الإعلانات (تدعم صور)
+- `ContactMessage` - رسائل التواصل
 - `InventoryItem` - أصناف المخزون
 - `InventoryTransaction` - حركات المخزون
-- `Project` - المشاريع (ورشات، آليات، مهندسين مدنيين/معماريين، مصروفات)
-- `PortfolioWork` - الأعمال المنفذة
-- `Announcement` - الإعلانات الداخلية
-- `ContactMessage` - رسائل التواصل من الواجهة الرئيسية
+
+### موديلات المحاسبة (Job Costing)
+- `CostCode` - أكواد التكلفة (CSI MasterFormat)
+- `JobBudget` - ميزانية المشروع حسب كود التكلفة
+- `JobCostEntry` - حركات التكاليف
+- `ProgressBill` - الفوترة التدريجية مع Retainage
+- `ChangeOrder` - أوامر التغيير
+
+### موديلات المحاسبة الأساسية
+- `Account` - دليل الحسابات
+- `JournalEntry` - القيود اليومية
 
 ## API Endpoints
 
 ### Public
 - `GET /api/public/companies` - قائمة الشركات النشطة
-- `GET /api/public/companies/:id` - تفاصيل شركة + أعمالها المنفذة
+- `GET /api/public/companies/:id` - تفاصيل شركة
+- `GET /api/public/companies/:id/announcements` - إعلانات شركة عامة
+- `GET /api/public/announcements` - كل الإعلانات (عامة)
 - `GET /api/public/works` - الأعمال المنفذة
 - `GET /api/public/ads` - إعلانات المنصة
-- `GET /api/public/stats` - إحصائيات المنصة (عدد الشركات، المشاريع، الموظفين)
-- `POST /api/public/contact` - إرسال رسالة تواصل (public)
-- `GET /api/public/messages` - قائمة الرسائل (سوبر أدمن فقط)
-- `PUT /api/public/messages/:id/read` - تحديد رسالة كمقروءة (سوبر أدمن)
+- `GET /api/public/stats` - إحصائيات المنصة
+- `POST /api/public/contact` - إرسال رسالة تواصل
+- `GET /api/public/messages` - قائمة الرسائل (سوبر أدمن)
+- `PUT /api/public/messages/:id/read` - تحديد كمقروءة (سوبر أدمن)
 
 ### Auth
-- `POST /api/auth/register` - إنشاء حساب + شركة (fullName, email, password, companyName)
-- `POST /api/auth/login` - تسجيل دخول (email + password)
-- `POST /api/auth/admin-login` - دخول مشرف (email + password)
+- `POST /api/auth/register` - إنشاء حساب + شركة
+- `POST /api/auth/login` - تسجيل دخول
+- `POST /api/auth/admin-login` - دخول مشرف
 - `GET /api/auth/me` - بيانات المستخدم الحالي
 
-### Company (Owner/Manager)
-- `GET /api/company/dashboard` - إحصائيات
+### Company
+- `GET /api/company/dashboard` - إحصائيات شاملة (حضور، مشاريع، مخزون، ميزانية)
+- `GET /api/company/alerts` - إنذارات (مخزون منخفض، إجازات معلقة، تجاوز ميزانية)
 - `GET /api/company/employees` - قائمة موظفين (بحث/فلترة/ترقيم)
-- `POST /api/company/employees` - إضافة موظف
+- `POST /api/company/employees` - إضافة موظف (مع employeeId تلقائي)
 - `PUT /api/company/employees/:id` - تعديل
 - `DELETE /api/company/employees/:id` - حذف
 - `PUT /api/company/permissions/:id` - تحديث صلاحيات
 - `GET /api/company/profile` - بيانات الشركة
-- `PUT /api/company/profile` - تحديث بيانات الشركة (owner)
-- `POST /api/company/logo` - رفع شعار الشركة (owner)
-- `PUT /api/company/:id/status` - تغيير حالة (سوبر أدمن)
-- `GET /api/company/all` - كل الشركات (سوبر أدمن)
+- `PUT /api/company/profile` - تحديث بيانات الشركة
+- `POST /api/company/logo` - رفع شعار الشركة
 
 ### Attendance
-- `POST /api/attendance/check-in`
-- `POST /api/attendance/check-out`
-- `GET /api/attendance/my-log`
-- `GET /api/attendance/report` (Owner/Manager/HR)
-- `POST /api/attendance/leave-request`
-- `PUT /api/attendance/leave-approve` (Owner/Manager/HR)
+- `POST /api/attendance/check-in` - تسجيل حضور
+- `POST /api/attendance/check-out` - تسجيل خروج
+- `GET /api/attendance/my-log` - سجل حضوري
+- `GET /api/attendance/report` - تقرير الحضور (Owner/Manager/HR)
+- `POST /api/attendance/leave-request` - طلب إجازة
+- `PUT /api/attendance/leave-approve` - اعتماد إجازة
 
 ### Projects
 - `GET /api/projects` - قائمة (search, filter, paginate)
-- `GET /api/projects/:id` - تفاصيل (مع المهندسين والورشات والآليات)
-- `POST /api/projects` - إنشاء (مع ورشات، آليات، مهندسين)
-- `PUT /api/projects/:id` - تعديل
-- `PUT /api/projects/:id/progress` - تحديث نسبة الإنجاز
+- `GET /api/projects/:id` - تفاصيل
+- `POST /api/projects` - إنشاء (6 خطوات)
+- `PUT /api/projects/:id` - تعديل (تواريخ، ميزانية، حالة، وصف)
+- `PUT /api/projects/:id/progress` - تحديث نسبة الإنجاز (100% = مكتمل تلقائياً)
 - `POST /api/projects/:id/files` - رفع ملف
 - `POST /api/projects/:id/expenses` - إضافة مصروف
-- `GET /api/projects/:id/report` - تقرير كامل للمشروع
+- `POST /api/projects/:id/materials` - إضافة مادة من المخزون (خصم تلقائي)
+- `GET /api/projects/:id/report` - تقرير شامل
 - `GET /api/projects/:id/team` - فريق العمل
 
-### Accounting (Owner/Manager/Accountant)
+### Accounting
 - `GET /api/accounts` - دليل الحسابات
 - `POST /api/accounts` - إضافة حساب
-- `GET /api/journal-entries`
-- `POST /api/journal-entries`
-- `GET /api/reports/balance-sheet`
-- `GET /api/reports/income-statement`
+- `GET /api/journal-entries` - القيود اليومية
+- `POST /api/journal-entries` - إضافة قيد
+- `GET /api/reports/balance-sheet` - الميزانية العمومية
+- `GET /api/reports/income-statement` - قائمة الدخل
 
-### Inventory (Owner/Manager/Inventory)
-- `GET /api/inventory/items`
-- `POST /api/inventory/items`
-- `GET /api/inventory/transactions`
-- `POST /api/inventory/transactions`
-- `GET /api/inventory/reports/low-stock`
-- `GET /api/inventory/reports/ledger/:itemId`
+### Inventory
+- `GET /api/inventory/items` - الأصناف
+- `POST /api/inventory/items` - إضافة صنف
+- `GET /api/inventory/transactions` - الحركات
+- `POST /api/inventory/transactions` - إضافة حركة
+- `GET /api/inventory/reports/low-stock` - تقرير المخزون المنخفض
+- `GET /api/inventory/reports/ledger/:itemId` - دفتر الأستاذ
 
 ### Portfolio
-- `GET /api/portfolio`
-- `POST /api/portfolio`
+- `GET /api/portfolio` - الأعمال المنفذة
+- `POST /api/portfolio` - إضافة عمل (مع صور)
 
 ### Announcements
-- `GET /api/announcements`
-- `POST /api/announcements`
+- `GET /api/announcements` - الإعلانات (محسوبة حسب الدور)
+- `POST /api/announcements` - إنشاء إعلان (مع صور)
+
+### Job Costing
+- `GET /api/job-costing/cost-codes` - أكواد التكلفة
+- `POST /api/job-costing/cost-codes` - إضافة كود
+- `DELETE /api/job-costing/cost-codes/:id` - حذف كود
+- `GET /api/job-costing/budget/:projectId` - ميزانية المشروع
+- `PUT /api/job-costing/budget/:id` - تحديث ميزانية
+- `POST /api/job-costing/entries` - تسجيل تكلفة
+- `GET /api/job-costing/projects/:id/costs` - تكاليف المشروع
+- `GET /api/job-costing/projects/:id/budget-vs-actual` - مقارنة ميزانية vs فعلي
+- `POST /api/job-costing/billing/:projectId` - إنشاء فاتورة تدريجية
+- `GET /api/job-costing/billing` - الفواتير
+- `PUT /api/job-costing/billing/:id/approve` - اعتماد فاتورة
+- `POST /api/job-costing/change-orders` - أمر تغيير
+- `GET /api/job-costing/change-orders` - أوامر التغيير
+- `PUT /api/job-costing/change-orders/:id/approve` - اعتماد أمر تغيير
+- `GET /api/job-costing/wip-report` - تقرير WIP
 
 ## الصفحات (Frontend)
 
-- `/` - Landing page (slider خلفية + إحصائيات حقيقية + أعمال منفذة + مطور المنصة)
-- `/company/:id` - صفحة شركة عامة (تعرض أعمالها المنفذة)
-- `/login` - تسجيل دخول (email + password)
+### الواجهة العامة
+- `/` - Landing page (slider + إحصائيات + شركات + أعمال + إعلانات + تواصل)
+- `/company/:id` - صفحة شركة عامة (معلومات + إعلانات + مشاريع منفذة مع سلايدر)
+- `/login` - تسجيل دخول
 - `/register` - إنشاء حساب + شركة
-- `/admin` - لوحة المشرف العام (إدارة الشركات + الرسائل)
-- `/dashboard` - لوحة التحكم
-- `/company-profile` - الملف التعريفي للشركة (شعار + بيانات)
-- `/employees` - قائمة الموظفين
+
+### لوحة المشرف العام
+- `/admin` - إدارة الشركات (موافقة/تعليق) + الرسائل
+
+### لوحة التحكم (حسب الدور)
+- `/dashboard` - داش بورد مخصص حسب الصلاحيات:
+  - **Owner/Manager**: إحصائيات شاملة + رسوم بيانية + إنذارات
+  - **Accountant**: محاسبة + مشاريع + حضور
+  - **HR**: موظفين + حضور + إجازات معلقة
+  - **Inventory**: مخزون + مخزون منخفض + صرف مواد
+  - **Engineer**: مشاريع نشطة + نسبة الإنجاز
+  - **Employee**: حضور + مشاريع + إعلانات
+
+### إدارة الموظفين
+- `/employees` - قائمة (مع رقم وظيفيEMP-001) + طباعة تقرير
 - `/employees/add` - إضافة موظف
 - `/employees/:id/edit` - تعديل موظف
-- `/permissions` - مصفوفة الصلاحيات (Owner only)
+- `/permissions` - إدارة الصلاحيات (Owner يعدل، Manager يعرض)
+
+### المشاريع
+- `/projects` - قائمة مشاريع (بحث + فلترة)
+- `/projects/:id` - تفاصيل مشروع:
+  - نسبة الإنجاز (slider 0-100%)
+  - تعديل المشروع (زر Edit)
+  - فريق العمل
+  - الورشات والآليات
+  - المصروفات
+  - المواد المستخدمة (صرف من المخزون مع سعر القطعة)
+  - الملفات المرفوعة
+- `/projects/:id/report` - تقرير شامل
+
+### المحاسبة
+- `/accounting` - دليل الحسابات + القيود اليومية + التقارير المالية
+
+### المخزون
+- `/inventory` - إدارة الأصناف + الحركات + تقرير المخزون المنخفض
+
+### أخرى
 - `/attendance` - حضور/غياب + تقويم + طلب إجازة
-- `/projects` - قائمة مشاريع (إنشاء بـ 6 خطوات)
-- `/projects/:id` - تفاصيل مشروع (فريق + ورشات + آليات + مصروفات)
-- `/projects/:id/report` - تقرير شامل للمشروع
-- `/accounting` - محاسبة
-- `/inventory` - مخزون
-- `/portfolio` - الأعمال المنفذة
-- `/announcements` - الإعلانات
+- `/portfolio` - الأعمال المنفذة (مع صور + سلايدر)
+- `/announcements` - الإعلانات (مع صور)
+- `/company-profile` - الملف التعريفي للشركة
 
-## تشغيل المشروع
+## الصلاحيات حسب الدور
 
-```bash
-# Backend (port 5000)
-cd construction-erp/backend
-npm run dev
+| الدور | الصلاحيات |
+|-------|-----------|
+| **owner** | كل الصلاحيات + تعديل الصلاحيات + حذف موظفين |
+| **manager** | إدارة المشاريع + الموظفين + المحاسبة + المخزون |
+| **accountant** | عرض + تعديل المحاسبة |
+| **hr** | عرض + تعديل الموارد البشرية + الحضور |
+| **inventory** | عرض + تعديل المخزون |
+| **engineer** | عرض + تعديل المشاريع |
+| **employee** | عرض المشاريع + الحضور |
 
-# Frontend (port 8080)
-cd construction-erp/frontend
-npm run dev
-```
+## نظام الإنذارات (Dashboard)
+- 🔴 **خطر**: تجاوز الميزانية
+- 🟠 **تحذير**: مخزون منخفض، مشروع يقترب من الموعد النهائي
+- 🔵 **معلومات**: طلبات إجازة معلقة
 
-### بيانات الدخول
+## نظام المخزون + المشاريع
+- صرف مواد من المخزون للمشروع مع تحديد سعر القطعة
+- خصم تلقائي من المخزون
+- تسجيل المصروف تلقائياً ضد المشروع
+- تتبع الكمية المتبقية
+
+## نظام المحاسبة (Job Costing)
+- **أكواد تكلفة CSI**: 15 كود جاهز (خرسانة، حديد، عمالة، معدات...)
+- **ميزانية حسب المشروع**: Budget vs Actual vs Projected
+- **فوترة تدريجية**: Progress Billing مع Retainage 5-10%
+- **أوامر تغيير**: Change Orders مع اعتماد وتعديل الميزانية
+- **تقرير WIP**: Work in Progress مع Over/Under Billing
+
+## الدخول
 | المستخدم | البريد | كلمة المرور |
 |----------|--------|-------------|
 | Super Admin | admin@platform.com | admin123 |
 | مستخدم مسجّل | (يسجل بنفسه عبر /register) |
 
-## تدفق التسجيل والدخول
-1. **شركة تسجل** → `/register` ← الاسم، البريد، كلمة المرور، اسم الشركة
-2. الشركة تنشأ بحالة **pending**، والمالك ينشأ بحالة active
-3. **المشرف العام** (admin@platform.com) يفتح `/admin` ويشوف الشركات بانتظار الموافقة
-4. المشرف يضغط **تفعيل** ← الشركة تصير active
-5. **صاحب الشركة** يسجل دخول `/login` ويدخل Dashboard
-6. صاحب الشركة يضيف موظفين من `/employees/add` بالأدوار
-7. كل موظف يسجل دخول بـ (email + password)
+## تشغيل المشروع محلياً
 
-## الميزات المضافة حديثاً
+```bash
+# Backend (port 5000)
+cd construction-erp/backend
+npm install
+npm run dev
 
-### المشاريع المحسّنة
-- **إنشاء مشروع بـ 6 خطوات** مع شريط تقدم
-- **المهندسين**: تفريق بين مدني ومعماري
-- **الورشات**: إضافة ورشات (حدادة، نجارة، ألمنيوم...) مع التخصص والجوال
-- **الآليات والمعدات**: إضافة معدات مع العدد وتكلفة التأجير
-- **المصروفات**: تتبع مصروفات المشروع (مواد، عمالة، آليات، ورشات، نقل، تراخيص)
-- **تقرير المشروع**: صفحة تقارير شاملة (ميزانية، مصروفات، مواد مستهلكة)
+# Frontend (port 8080)
+cd construction-erp/frontend
+npm install
+npm run dev
+```
 
-### الملف التعريفي للشركة
-- رفع شعار الشركة
-- تعديل اسم، وصف، سجل تجاري، رقم ضريبي
-- تعديل معلومات الاتصال
+## النشر
 
-### الواجهة الرئيسية
-- **خلفية متحركة (Slider)** من صور المشروع
-- **إحصائيات حقيقية** (عدد الشركات، المشاريع، الموظفين)
-- **الأعمال المنفذة** بدل قائمة الشركات
-- **قسم مطور المنصة** مع صورة وروابط تواصل
-- **نموذج تواصل** يرسل رسائل للوحة تحكم الأدمن
+### Backend (Render)
+1. ارفع مجلد `backend` على GitHub
+2. Render → New Web Service
+3. Root Directory: `backend`
+4. Build Command: `npm install`
+5. Start Command: `node server.js`
+6. Environment Variables: `JWT_SECRET`, `FRONTEND_URL`, `NODE_ENV=production`
 
-### لوحة تحكم الأدمن
-- تبويب الشركات (موافقة/تعليق)
-- تبويب الرسائل (عرض رسائل الزوار وتحديد كمقروءة)
+### Frontend (Vercel)
+1. ارفع مجلد `frontend` على GitHub
+2. Vercel → New Project
+3. Root Directory: `frontend`
+4. Framework: Vite
+5. Output Directory: `dist`
 
-### تحسينات أخرى
-- زر رفع ملفات موثوق (بدل react-dropzone)
-- تسجيل خروج → يرجع للصفحة الرئيسية
-- إنشاء مشروع ← يرجع للخطوة الأولى (بدون إغلاق)
-
-## الملاحظات
-- nedb-promises تستخدم بدل MongoDB/Mongoose
-- البيانات تُحفظ في ملفات `backend/data/*.db`
+## ملاحظات تقنية
+- nedb-promises تستخدم بدل MongoDB (ملفات محلية)
+- البيانات تُحفظ في `backend/data/*.db`
 - كل `companyId` يضمن عزل البيانات بين الشركات
 - JWT middleware يتحقق من الصلاحيات في كل طلب
-- مجلد `uploads/` ينشأ تلقائياً عند تشغيل السيرفر
+- مجلد `uploads/` ينشأ تلقائياً
+- نسبة الإنجاز 100% = حالة المشروع تتغير تلقائياً لـ "مكتمل"
+- كل موظف يحصل على employeeId تلقائي (EMP-001, EMP-002...)
+- الداش بورد يتغير حسب دور المستخدم وصلاحياته
