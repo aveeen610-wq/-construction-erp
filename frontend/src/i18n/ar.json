@@ -1,0 +1,95 @@
+{
+  "app": {
+    "title": "منصة إدارة شركات المقاولات",
+    "subtitle": "نظام متكامل لإدارة شركات المقاولات والمشاريع الهندسية"
+  },
+  "nav": {
+    "home": "الرئيسية",
+    "login": "تسجيل دخول",
+    "register": "تسجيل شركتك",
+    "dashboard": "لوحة التحكم",
+    "logout": "تسجيل خروج",
+    "companies": "الشركات",
+    "projects": "المشاريع",
+    "employees": "الموظفين",
+    "attendance": "الحضور",
+    "accounting": "المحاسبة",
+    "inventory": "المخزون",
+    "portfolio": "الأعمال المنفذة",
+    "announcements": "الإعلانات",
+    "settings": "الإعدادات"
+  },
+  "login": {
+    "title": "تسجيل الدخول",
+    "selectCompany": "اختر شركتك",
+    "username": "اسم المستخدم",
+    "password": "كلمة المرور",
+    "submit": "دخول",
+    "noAccount": "ليس لديك حساب؟",
+    "registerHere": "سجل شركتك هنا",
+    "welcome": "مرحباً بك في",
+    "selectCompanyFirst": "الرجاء اختيار الشركة أولاً"
+  },
+  "company": {
+    "register": "تسجيل شركة جديدة",
+    "name": "اسم الشركة",
+    "commercialReg": "السجل التجاري",
+    "logo": "الشعار",
+    "description": "الوصف",
+    "specialization": "التخصص",
+    "phone": "رقم الهاتف",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "status": "الحالة",
+    "pending": "قيد المراجعة",
+    "active": "نشط",
+    "suspended": "موقوف",
+    "ownerName": "اسم المالك"
+  },
+  "employee": {
+    "add": "إضافة موظف",
+    "fullName": "الاسم الكامل",
+    "role": "الدور",
+    "permissions": "الصلاحيات",
+    "department": "القسم",
+    "jobTitle": "المسمى الوظيفي",
+    "salary": "الراتب",
+    "status": "الحالة",
+    "active": "نشط",
+    "suspended": "موقوف"
+  },
+  "roles": {
+    "owner": "مالك",
+    "manager": "مدير",
+    "accountant": "محاسب",
+    "hr": "موارد بشرية",
+    "inventory": "مدير مخزن",
+    "engineer": "مهندس",
+    "employee": "موظف"
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "search": "بحث",
+    "actions": "إجراءات",
+    "loading": "جاري التحميل...",
+    "noData": "لا توجد بيانات",
+    "confirm": "تأكيد",
+    "success": "تم بنجاح",
+    "error": "حدث خطأ",
+    "darkMode": "الوضع الليلي",
+    "lightMode": "الوضع النهاري",
+    "language": "اللغة"
+  },
+  "dashboard": {
+    "employees": "الموظفين",
+    "activeProjects": "المشاريع النشطة",
+    "todayAttendance": "الحضور اليوم",
+    "lowStock": "مواد تحت الحد الأدنى",
+    "revenue": "الإيرادات",
+    "expenses": "المصروفات",
+    "netIncome": "صافي الدخل"
+  }
+}

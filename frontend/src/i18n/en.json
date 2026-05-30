@@ -1,0 +1,95 @@
+{
+  "app": {
+    "title": "Construction Company Management Platform",
+    "subtitle": "Integrated ERP for construction companies and engineering projects"
+  },
+  "nav": {
+    "home": "Home",
+    "login": "Login",
+    "register": "Register Your Company",
+    "dashboard": "Dashboard",
+    "logout": "Logout",
+    "companies": "Companies",
+    "projects": "Projects",
+    "employees": "Employees",
+    "attendance": "Attendance",
+    "accounting": "Accounting",
+    "inventory": "Inventory",
+    "portfolio": "Portfolio",
+    "announcements": "Announcements",
+    "settings": "Settings"
+  },
+  "login": {
+    "title": "Login",
+    "selectCompany": "Select your company",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign In",
+    "noAccount": "Don't have an account?",
+    "registerHere": "Register here",
+    "welcome": "Welcome to",
+    "selectCompanyFirst": "Please select a company first"
+  },
+  "company": {
+    "register": "Register New Company",
+    "name": "Company Name",
+    "commercialReg": "Commercial Registration",
+    "logo": "Logo",
+    "description": "Description",
+    "specialization": "Specialization",
+    "phone": "Phone",
+    "email": "Email",
+    "address": "Address",
+    "status": "Status",
+    "pending": "Pending",
+    "active": "Active",
+    "suspended": "Suspended",
+    "ownerName": "Owner Name"
+  },
+  "employee": {
+    "add": "Add Employee",
+    "fullName": "Full Name",
+    "role": "Role",
+    "permissions": "Permissions",
+    "department": "Department",
+    "jobTitle": "Job Title",
+    "salary": "Salary",
+    "status": "Status",
+    "active": "Active",
+    "suspended": "Suspended"
+  },
+  "roles": {
+    "owner": "Owner",
+    "manager": "Manager",
+    "accountant": "Accountant",
+    "hr": "HR",
+    "inventory": "Inventory Manager",
+    "engineer": "Engineer",
+    "employee": "Employee"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "search": "Search",
+    "actions": "Actions",
+    "loading": "Loading...",
+    "noData": "No data available",
+    "confirm": "Confirm",
+    "success": "Success",
+    "error": "Error occurred",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode",
+    "language": "Language"
+  },
+  "dashboard": {
+    "employees": "Employees",
+    "activeProjects": "Active Projects",
+    "todayAttendance": "Today's Attendance",
+    "lowStock": "Low Stock Items",
+    "revenue": "Revenue",
+    "expenses": "Expenses",
+    "netIncome": "Net Income"
+  }
+}
