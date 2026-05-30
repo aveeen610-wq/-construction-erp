@@ -3,7 +3,6 @@ const cors = require('cors');
 const helmet = require('helmet');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
-const passport = require('./src/config/passport');
 const path = require('path');
 require('dotenv').config();
 
@@ -34,7 +33,6 @@ app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
-app.use(passport.initialize());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 const authLimiter = rateLimit({
